@@ -127,7 +127,7 @@ for doc in docs:
         refresh=True
     )
 
-# Verify they are in:
+#Verify they are in:
 print("We indexed:\n{}".format(client.cat.count(index_name, params={"v": "true"})))
 
 #######################
@@ -149,6 +149,7 @@ print("\tDeleted old store response status: %s" % resp.status_code)
 # Create our new LTR storage
 resp = requests.put(ltr_model_path, auth=auth, verify=False)
 print("\tCreate the new store response status: %s" % resp.status_code)
+
 
 #######################
 #
@@ -256,6 +257,7 @@ for query in queries:
             "For each hit answer the question: 'Is this hit relevant(1) or not relevant(0) to the query: {}?':".format(
                 queries[query]))
         judge_vals = judgments.get(query)
+        print('judge_vals begining: ', judge_vals)
         if judge_vals is None:
             judge_vals = []
             judgments[query] = judge_vals
@@ -276,7 +278,8 @@ for query in queries:
                     break
             if input == "exit" or input == "e":
                 break  # break out of hits, this is ugly, but OK for what we are doing here
-
+    print('judge_vals: ', judge_vals)
+    print('judges after query: ', judgments)
 #######################
 #
 # Step 4: Create Training Data (AKA Feature Logging)
@@ -285,11 +288,15 @@ for query in queries:
 # Coming out of this loop, we should have an array of judgments
 train_file = tempfile.NamedTemporaryFile(delete=False)
 # Log our features by sending our query and it's judged documents to OpenSearch
+print(judgments)
 for (idx, item) in enumerate(judgments.items()):
+    print('idx: ', idx)
+    print('item: ', item)
     judge_vals = item[1]
     # create a new SLTR query with an appropriate filter query
     doc_ids = []
     for judgment in judge_vals:
+        print('judgement in loop: ', judgment)
         # Note: we are executing one query per judgment doc id here because it's easier, but we could do this
         # by adding all the doc ids for this query and scoring them all at once and cut our number of queries down
         # significantly
