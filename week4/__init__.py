@@ -2,7 +2,6 @@ import os
 
 from flask import Flask
 from flask import render_template
-
 import fasttext
 
 def create_app(test_config=None):
@@ -18,12 +17,11 @@ def create_app(test_config=None):
         else:
             print("No query model found.  Have you run fasttext?")
         print("QUERY_CLASS_MODEL_LOC: %s" % QUERY_CLASS_MODEL_LOC)
+        app.config["index_name"] = os.environ.get("INDEX_NAME", "bbuy_products")
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
-    app.config["index_name"] = os.environ.get("INDEX_NAME", "bbuy_products")
-    
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
